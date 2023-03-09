@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace is to determine the xml file to link with the interface files path-->
+<mapper namespace="com.jy.store.mapper.UserMapper">
+
+    <!--
+        id: the identifier assign for his linking rule
+        type: the path of the class to be linked
+     -->
+    <resultMap id="UserEntityMap" type="com.jy.store.entity.User">
+        <!-- Match the field if the name in the table and java are different, can skip if they are the same -->
+        <!--
+            column: the name in table
+            property: the name in java class
+            primary key have to define in resultMap
+        -->
+        <result column="uid" property="uid"></result>
+        <result column="is_delete" property="isDelete"></result>
+        <result column="created_user" property="createdUser"></result>
+        <result column="created_time" property="createdTime"></result>
+        <result column="modified_user" property="modifiedUser"></result>
+        <result column="modified_time" property="modifiedTime"></result>
+    </resultMap>
+
+    <!-- id is the function name under the UserMapper class in namaspace  -->
+    <!--
+         userGenerateKeys: set a field to incremental (primary key)
+         keyProperty: define which field to become incremental
+     -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="uid" >
+        INSERT INTO t_user (
+            username,
+            password,
+            salt,
+            phone,
+            email,
+            gender,
+            avatar,
+            is_delete,
+            created_user,
+            created_time,
+            modified_user,
+            modified_time
+        ) VALUES (
+            #{username},
+            #{password},
+            #{salt},
+            #{phone},
+            #{email},
+            #{gender},
+            #{avatar},
+            #{isDelete},
+            #{createdUser},
+            #{createdTime},
+            #{modifiedUser},
+            #{modifiedTime}
+        )
+    </insert>
+
+    <select id="findByUsername" resultMap="UserEntityMap">
+        SELECT * FROM t_user WHERE username = #{username}
+    </select>
+
+    <update id="updatePasswordByUid">
+        UPDATE t_user SET password=#{password}, modified_user=#{modifiedUser}, modified_time=#{modifiedTime} WHERE uid=${uid}
+    </update>
+
+    <select id="findByUid" resultMap="UserEntityMap">
+        SELECT * FROM t_user WHERE uid = #{uid}
+    </select>
+
+    <update id="updateInfoByUid">
+        UPDATE
+        t_user
+        SET
+        <if test="phone != null">phone = #{phone},</if>
+        <if test="email != null">email = #{email},</if>
+        <if test="gender != null">gender = #{gender},</if>
+        modified_user = #{modifiedUser},
+        modified_time = #{modifiedTime}
+        WHERE
+        uid = #{uid}
+    </update>
+</mapper>
